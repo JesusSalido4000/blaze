@@ -1,9 +1,7 @@
 # Variables
 $solutionName = "SeleniumFramework"
 $solutionDir = "$PSScriptRoot\$solutionName"
-$testsProject = "$solutionName.Tests"
-$pagesProject = "$solutionName.Pages"
-$utilsProject = "$solutionName.Utilities"
+$projectName = "$solutionName"
 
 # Verificar si ya existe la solución y eliminarla
 if (Test-Path $solutionDir) {
@@ -19,36 +17,33 @@ Set-Location -Path $solutionDir
 # Crear la solución
 dotnet new sln -n $solutionName
 
-# Crear los proyectos
-dotnet new mstest -n $testsProject
-dotnet new classlib -n $pagesProject
-dotnet new classlib -n $utilsProject
+# Crear el proyecto principal
+dotnet new mstest -n $projectName
 
-# Agregar los proyectos a la solución
-dotnet sln add "$testsProject\$testsProject.csproj"
-dotnet sln add "$pagesProject\$pagesProject.csproj"
-dotnet sln add "$utilsProject\$utilsProject.csproj"
+# Agregar el proyecto a la solución
+dotnet sln add "$projectName\$projectName.csproj"
 
-# Agregar referencias entre proyectos
-dotnet add "$testsProject\$testsProject.csproj" reference "$pagesProject\$pagesProject.csproj"
-dotnet add "$testsProject\$testsProject.csproj" reference "$utilsProject\$utilsProject.csproj"
+# Crear carpetas para organización
+New-Item -ItemType Directory -Path "$projectName\Pages" | Out-Null
+New-Item -ItemType Directory -Path "$projectName\Utilities" | Out-Null
+New-Item -ItemType Directory -Path "$projectName\Tests" | Out-Null
 
 # Instalar paquetes de NuGet requeridos
-dotnet add "$testsProject\$testsProject.csproj" package Selenium.WebDriver
-dotnet add "$testsProject\$testsProject.csproj" package Selenium.WebDriver.ChromeDriver
-dotnet add "$testsProject\$testsProject.csproj" package Microsoft.NET.Test.Sdk
-dotnet add "$testsProject\$testsProject.csproj" package MSTest.TestAdapter
-dotnet add "$testsProject\$testsProject.csproj" package MSTest.TestFramework
+dotnet add "$projectName\$projectName.csproj" package Selenium.WebDriver
+dotnet add "$projectName\$projectName.csproj" package Selenium.WebDriver.ChromeDriver
+dotnet add "$projectName\$projectName.csproj" package Microsoft.NET.Test.Sdk
+dotnet add "$projectName\$projectName.csproj" package MSTest.TestAdapter
+dotnet add "$projectName\$projectName.csproj" package MSTest.TestFramework
 
 # Código de las clases
 $testCode = @"
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
-using $solutionName.Utilities;
-using $solutionName.Pages;
+using SeleniumFramework.Utilities;
+using SeleniumFramework.Pages;
 
-namespace $solutionName.Tests
+namespace SeleniumFramework.Tests
 {
     [TestClass]
     public class DemoBlazeTests
@@ -80,12 +75,12 @@ namespace $solutionName.Tests
     }
 }
 "@
-$testCode | Out-File "$testsProject\DemoBlazeTests.cs" -Encoding UTF8
+$testCode | Out-File "$projectName\Tests\DemoBlazeTests.cs" -Encoding UTF8
 
 $pageCode = @"
 using OpenQA.Selenium;
 
-namespace $solutionName.Pages
+namespace SeleniumFramework.Pages
 {
     public class HomePage
     {
@@ -109,13 +104,13 @@ namespace $solutionName.Pages
     }
 }
 "@
-$pageCode | Out-File "$pagesProject\HomePage.cs" -Encoding UTF8
+$pageCode | Out-File "$projectName\Pages\HomePage.cs" -Encoding UTF8
 
 $utilCode = @"
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
-namespace $solutionName.Utilities
+namespace SeleniumFramework.Utilities
 {
     public static class WebDriverFactory
     {
@@ -128,7 +123,7 @@ namespace $solutionName.Utilities
     }
 }
 "@
-$utilCode | Out-File "$utilsProject\WebDriverFactory.cs" -Encoding UTF8
+$utilCode | Out-File "$projectName\Utilities\WebDriverFactory.cs" -Encoding UTF8
 
 # Mensaje final
 Write-Host "La solución '$solutionName' se ha creado correctamente en '$solutionDir'."
