@@ -42,11 +42,6 @@ dotnet add "$testsProject\$testsProject.csproj" package MSTest.TestFramework
 
 # Código de las clases
 $testCode = @"
-// Proyecto: Framework de Automatización con Selenium y C#
-// Tipo de Proyecto: Unit Test Project (.NET)
-// IDE: Visual Studio Community Edition
-// Repositorio: GitHub
-
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
@@ -72,9 +67,9 @@ namespace $solutionName.Tests
         [TestMethod]
         public void VerifyHomePageTitle()
         {
-            string expectedTitle = ""STORE"";
+            string expectedTitle = "STORE";
             string actualTitle = homePage.GetTitle();
-            Assert.AreEqual(expectedTitle, actualTitle, ""El título de la página de inicio no es el esperado."");
+            Assert.AreEqual(expectedTitle, actualTitle, "El título de la página de inicio no es el esperado.");
         }
 
         [TestCleanup]
@@ -84,8 +79,8 @@ namespace $solutionName.Tests
         }
     }
 }
-"
-$testCode | Out-File "$testsProject\DemoBlazeTests.cs"
+"@
+$testCode | Out-File "$testsProject\DemoBlazeTests.cs" -Encoding UTF8
 
 $pageCode = @"
 using OpenQA.Selenium;
@@ -95,7 +90,7 @@ namespace $solutionName.Pages
     public class HomePage
     {
         private readonly IWebDriver driver;
-        private readonly string url = ""https://www.demoblaze.com"";
+        private readonly string url = "https://www.demoblaze.com";
 
         public HomePage(IWebDriver driver)
         {
@@ -113,8 +108,8 @@ namespace $solutionName.Pages
         }
     }
 }
-"
-$pageCode | Out-File "$pagesProject\HomePage.cs"
+"@
+$pageCode | Out-File "$pagesProject\HomePage.cs" -Encoding UTF8
 
 $utilCode = @"
 using OpenQA.Selenium;
@@ -132,8 +127,8 @@ namespace $solutionName.Utilities
         }
     }
 }
-"
-$utilCode | Out-File "$utilsProject\WebDriverFactory.cs"
+"@
+$utilCode | Out-File "$utilsProject\WebDriverFactory.cs" -Encoding UTF8
 
 # Mensaje final
 Write-Host "La solución '$solutionName' se ha creado correctamente en '$solutionDir'."
