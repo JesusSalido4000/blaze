@@ -1,0 +1,140 @@
+# Variables
+$solutionName = "SeleniumFramework"
+$solutionDir = "$PSScriptRoot\$solutionName"
+$testsProject = "$solutionName.Tests"
+$pagesProject = "$solutionName.Pages"
+$utilsProject = "$solutionName.Utilities"
+
+# Verificar si ya existe la solución y eliminarla
+if (Test-Path $solutionDir) {
+    Remove-Item -Recurse -Force $solutionDir
+}
+
+# Crear la carpeta de la solución
+New-Item -ItemType Directory -Path $solutionDir | Out-Null
+
+# Navegar a la carpeta de la solución
+Set-Location -Path $solutionDir
+
+# Crear la solución
+dotnet new sln -n $solutionName
+
+# Crear los proyectos
+dotnet new mstest -n $testsProject
+dotnet new classlib -n $pagesProject
+dotnet new classlib -n $utilsProject
+
+# Agregar los proyectos a la solución
+dotnet sln add "$testsProject\$testsProject.csproj"
+dotnet sln add "$pagesProject\$pagesProject.csproj"
+dotnet sln add "$utilsProject\$utilsProject.csproj"
+
+# Agregar referencias entre proyectos
+dotnet add "$testsProject\$testsProject.csproj" reference "$pagesProject\$pagesProject.csproj"
+dotnet add "$testsProject\$testsProject.csproj" reference "$utilsProject\$utilsProject.csproj"
+
+# Instalar paquetes de NuGet requeridos
+dotnet add "$testsProject\$testsProject.csproj" package Selenium.WebDriver
+dotnet add "$testsProject\$testsProject.csproj" package Selenium.WebDriver.ChromeDriver
+dotnet add "$testsProject\$testsProject.csproj" package Microsoft.NET.Test.Sdk
+dotnet add "$testsProject\$testsProject.csproj" package MSTest.TestAdapter
+dotnet add "$testsProject\$testsProject.csproj" package MSTest.TestFramework
+
+# Código de las clases
+$testCode = @"
+// Proyecto: Framework de Automatización con Selenium y C#
+// Tipo de Proyecto: Unit Test Project (.NET)
+// IDE: Visual Studio Community Edition
+// Repositorio: GitHub
+
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium;
+using $solutionName.Utilities;
+using $solutionName.Pages;
+
+namespace $solutionName.Tests
+{
+    [TestClass]
+    public class DemoBlazeTests
+    {
+        private IWebDriver driver;
+        private HomePage homePage;
+
+        [TestInitialize]
+        public void SetUp()
+        {
+            driver = WebDriverFactory.CreateDriver();
+            homePage = new HomePage(driver);
+            homePage.NavigateTo();
+        }
+
+        [TestMethod]
+        public void VerifyHomePageTitle()
+        {
+            string expectedTitle = ""STORE"";
+            string actualTitle = homePage.GetTitle();
+            Assert.AreEqual(expectedTitle, actualTitle, ""El título de la página de inicio no es el esperado."");
+        }
+
+        [TestCleanup]
+        public void TearDown()
+        {
+            driver.Quit();
+        }
+    }
+}
+"
+$testCode | Out-File "$testsProject\DemoBlazeTests.cs"
+
+$pageCode = @"
+using OpenQA.Selenium;
+
+namespace $solutionName.Pages
+{
+    public class HomePage
+    {
+        private readonly IWebDriver driver;
+        private readonly string url = ""https://www.demoblaze.com"";
+
+        public HomePage(IWebDriver driver)
+        {
+            this.driver = driver;
+        }
+
+        public void NavigateTo()
+        {
+            driver.Navigate().GoToUrl(url);
+        }
+
+        public string GetTitle()
+        {
+            return driver.Title;
+        }
+    }
+}
+"
+$pageCode | Out-File "$pagesProject\HomePage.cs"
+
+$utilCode = @"
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+
+namespace $solutionName.Utilities
+{
+    public static class WebDriverFactory
+    {
+        public static IWebDriver CreateDriver()
+        {
+            var driver = new ChromeDriver();
+            driver.Manage().Window.Maximize();
+            return driver;
+        }
+    }
+}
+"
+$utilCode | Out-File "$utilsProject\WebDriverFactory.cs"
+
+# Mensaje final
+Write-Host "La solución '$solutionName' se ha creado correctamente en '$solutionDir'."
+Write-Host "Abre Visual Studio y carga la solución para comenzar a trabajar."
