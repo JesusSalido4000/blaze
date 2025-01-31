@@ -1,3 +1,19 @@
-# blaze
-Training practices
-https://eur06.safelinks.protection.outlook.com/?url=https%3A%2F%2Fmandrillapp.com%2Ftrack%2Fclick%2F30759299%2Fservices.testim.io%3Fp%3DeyJzIjoicEkyTVRWb2MzQzJUVGNhS2FGWmRhT0Q2RVhzIiwidiI6MSwicCI6IntcInVcIjozMDc1OTI5OSxcInZcIjoxLFwidXJsXCI6XCJodHRwczpcXFwvXFxcL3NlcnZpY2VzLnRlc3RpbS5pb1xcXC9hdXRoXFxcL2VtYWlsLWNvbmZpcm1hdGlvbj90b2tlbj1vZTVIVWE3Slo4Z1BFdWpyTHNnd0pyWXl6dks4dHdHTVdzNFN0aFZjJmVtYWlsPWplc3VzLWFybnVsZm8uc2FsaWRvJTQwZXZpZGVuLmNvbSZwcm9kdWN0VHlwZT10ZXN0aW1cIixcImlkXCI6XCIzY2ZlM2IxOWFhNDY0ZmQ5OTEyYjgyMWJhZWVlYmVhYlwiLFwidXJsX2lkc1wiOltcIjY0ZGI2ZDAzZDkwM2FhMzcwMDU1Mjc0YjZiZDA2MGMyZTEzZGUyYzdcIl19In0&data=05%7C02%7Cjesus-arnulfo.salido%40eviden.com%7C9c65c1c0b392456ac65308dd418b9c26%7C7d1c77852d8a437db8421ed5d8fbe00a%7C0%7C0%7C638738790058767688%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=bwTuuu%2FHiVxA76kbchJVBsgrxpuVd18LXItCxxZNVXk%3D&reserved=0
+// 1️⃣ Generar un usuario aleatorio
+const randomUsername = `user${Math.floor(Math.random() * 100000)}`;
+const password = "Testim@123"; // Puedes cambiar esta contraseña
+
+// 2️⃣ Hacer clic en el botón "Sign up" para abrir la modal
+await testim.click("#signin2");
+
+// 3️⃣ Esperar a que la modal de registro sea visible
+await testim.waitForElement("#signInModal", 5000);
+
+// 4️⃣ Ingresar el usuario y la contraseña en los campos de texto
+await testim.setValue("#sign-username", randomUsername);
+await testim.setValue("#sign-password", password);
+
+// 5️⃣ Hacer clic en el botón "Sign up"
+await testim.click("button[onclick='register()']");
+
+// 6️⃣ Mostrar el usuario generado en la consola
+console.log("Usuario registrado:", randomUsername);
